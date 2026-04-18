@@ -1,9 +1,9 @@
-import type { Metadata } from 'next';
-import '@/styles/globals.scss';
+import type { Metadata } from "next";
+import "@/styles/globals.scss";
 
 export const metadata: Metadata = {
-  title: 'StickyBoard',
-  description: 'A collaborative sticky notes board',
+  title: "StickyBoard by @lucianoaraus",
+  description: "A collaborative sticky notes board",
 };
 
 export default function RootLayout({
