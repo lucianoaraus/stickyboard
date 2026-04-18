@@ -1,4 +1,4 @@
-@use '@/styles/variables';
+@use "@/styles/variables";
 
 .note {
   position: absolute;
@@ -13,15 +13,25 @@
   min-height: 160px;
 
   &.selected {
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18), 0 0 0 2px rgba(46, 196, 199, 0.5);
+    box-shadow:
+      0 10px 30px rgba(0, 0, 0, 0.18),
+      0 0 0 2px #0000002f;
   }
 }
 
 // Color variants
-.yellow { background: #fef08a; }
-.teal   { background: #99f6e4; }
-.purple { background: #e9d5ff; }
-.pink   { background: #fecdd3; }
+.yellow {
+  background: #ffcc25;
+}
+.teal {
+  background: #0ab78d;
+}
+.purple {
+  background: #9f61ff;
+}
+.pink {
+  background: #ff7b6c;
+}
 
 // Content area — flex-centers the editor vertically & horizontally
 .content {
@@ -56,10 +66,20 @@
     padding-left: 1.4em;
   }
 
-  b, strong { font-weight: 700; }
-  i, em { font-style: italic; }
-  u { text-decoration: underline; }
-  s { text-decoration: line-through; }
+  b,
+  strong {
+    font-weight: 700;
+  }
+  i,
+  em {
+    font-style: italic;
+  }
+  u {
+    text-decoration: underline;
+  }
+  s {
+    text-decoration: line-through;
+  }
 }
 
 // Resize handles
@@ -77,17 +97,62 @@
     border-radius: 2px;
   }
 
-  &.nw { top: -4px; left: -4px; cursor: nw-resize; }
-  &.ne { top: -4px; right: -4px; cursor: ne-resize; }
-  &.sw { bottom: -4px; left: -4px; cursor: sw-resize; }
-  &.se { bottom: -4px; right: -4px; cursor: se-resize; }
+  &.nw {
+    top: -4px;
+    left: -4px;
+    cursor: nw-resize;
+  }
+  &.ne {
+    top: -4px;
+    right: -4px;
+    cursor: ne-resize;
+  }
+  &.sw {
+    bottom: -4px;
+    left: -4px;
+    cursor: sw-resize;
+  }
+  &.se {
+    bottom: -4px;
+    right: -4px;
+    cursor: se-resize;
+  }
 
-  &.n  { top: -4px; left: 50%; transform: translateX(-50%); width: 40px; height: 8px; cursor: n-resize; }
-  &.s  { bottom: -4px; left: 50%; transform: translateX(-50%); width: 40px; height: 8px; cursor: s-resize; }
-  &.w  { left: -4px; top: 50%; transform: translateY(-50%); width: 8px; height: 40px; cursor: w-resize; }
-  &.e  { right: -4px; top: 50%; transform: translateY(-50%); width: 8px; height: 40px; cursor: e-resize; }
+  &.n {
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 8px;
+    cursor: n-resize;
+  }
+  &.s {
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 8px;
+    cursor: s-resize;
+  }
+  &.w {
+    left: -4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 40px;
+    cursor: w-resize;
+  }
+  &.e {
+    right: -4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 40px;
+    cursor: e-resize;
+  }
 
-  &:hover, &:active {
+  &:hover,
+  &:active {
     background: rgba(46, 196, 199, 0.5) !important;
   }
 }
