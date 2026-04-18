@@ -1,19 +1,19 @@
 @use '@/styles/variables';
 
 .page {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  gap: 16px;
+  gap: 12px;
   background: var(--color-bg-primary);
-  padding: 80px 24px 80px;
+  padding: 68px 12px 12px;
 }
 
 .board {
   position: relative;
-  width: clamp(1024px, calc(100vw - 120px), 1400px);
-  height: clamp(768px, calc(100vh - 160px), 900px);
+  width: clamp(500px, calc(100vw - 96px), 1400px);
+  height: clamp(480px, calc(100vh - 80px), 900px);
   background: var(--color-bg-secondary);
   border-radius: 16px;
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06);
