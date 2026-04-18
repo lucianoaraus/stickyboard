@@ -8,7 +8,7 @@ export interface Note {
   width: number;
   height: number;
   color: NoteColor;
-  size: NoteSize;
+  size: NoteSize | null;
   content: string;
   zIndex: number;
   createdAt: string;
