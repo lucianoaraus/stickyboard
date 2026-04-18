@@ -54,6 +54,7 @@ export function StickyNote({
   const editorRef = useRef<HTMLDivElement>(null);
   const overTrashRef = useRef(false);
   const fontSizeRef = useRef(MAX_FONT);
+  const isEditorFocused = useRef(false);
 
   // ── Font size auto-scaling ──────────────────────────────────────────────────
   const recalcFontSize = useCallback(() => {
@@ -168,6 +169,8 @@ export function StickyNote({
     (e: React.MouseEvent) => {
       onSelect(note.id);
 
+      if (isEditorFocused.current && editorRef.current?.contains(e.target as Node)) return;
+
       const startMouseX = e.clientX;
       const startMouseY = e.clientY;
       const noteStartX = note.x;
@@ -217,7 +220,12 @@ export function StickyNote({
     [note, onSelect, startResize]
   );
 
+  const handleFocus = useCallback(() => {
+    isEditorFocused.current = true;
+  }, []);
+
   const handleBlur = useCallback(() => {
+    isEditorFocused.current = false;
     if (editorRef.current) {
       updateNote(note.id, { content: editorRef.current.innerHTML });
     }
@@ -302,6 +310,7 @@ export function StickyNote({
             onInput={recalcFontSize}
             onKeyDown={handleKeyDown}
             onPaste={handlePaste}
+            onFocus={handleFocus}
             onBlur={handleBlur}
           />
         </div>
