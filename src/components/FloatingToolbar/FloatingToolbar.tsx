@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Note, NoteColor, NoteSize } from '@/types';
 import { useNotesContext } from '@/context/NotesContext';
 import styles from './FloatingToolbar.module.scss';
@@ -32,13 +32,41 @@ const FORMAT_ACTIONS = [
 interface FloatingToolbarProps {
   note: Note;
   boardRect: DOMRect | null;
-  noteRef: React.RefObject<HTMLDivElement | null>;
 }
 
-export function FloatingToolbar({ note, boardRect, noteRef }: FloatingToolbarProps) {
-  const { updateNote, deleteNote, bringForward, bringToFront, sendBackward, sendToBack } =
+const STATEFUL_CMDS = ['bold', 'italic', 'underline', 'strikeThrough'];
+
+function queryActiveFormats(): Set<string> {
+  const active = new Set<string>();
+  STATEFUL_CMDS.forEach((cmd) => {
+    try { if (document.queryCommandState(cmd)) active.add(cmd); } catch {}
+  });
+  return active;
+}
+
+export function FloatingToolbar({ note, boardRect }: FloatingToolbarProps) {
+  const { updateNote, deleteNote, duplicateNote, bringForward, bringToFront, sendBackward, sendToBack } =
     useNotesContext();
   const [openPanel, setOpenPanel] = useState<Panel>(null);
+  const [activeFormats, setActiveFormats] = useState<Set<string>>(new Set());
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const update = () => setActiveFormats(queryActiveFormats());
+    document.addEventListener('selectionchange', update);
+    return () => document.removeEventListener('selectionchange', update);
+  }, []);
+
+  useEffect(() => {
+    if (!openPanel) return;
+    const handleMouseDown = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setOpenPanel(null);
+      }
+    };
+    document.addEventListener('mousedown', handleMouseDown);
+    return () => document.removeEventListener('mousedown', handleMouseDown);
+  }, [openPanel]);
 
   const togglePanel = useCallback(
     (panel: Panel) => {
@@ -47,8 +75,10 @@ export function FloatingToolbar({ note, boardRect, noteRef }: FloatingToolbarPro
     []
   );
 
-  const handleFormat = useCallback((cmd: string) => {
+  const handleFormat = useCallback((e: React.MouseEvent, cmd: string) => {
+    e.preventDefault();
     document.execCommand(cmd, false);
+    setActiveFormats(queryActiveFormats());
     setOpenPanel(null);
   }, []);
 
@@ -68,6 +98,11 @@ export function FloatingToolbar({ note, boardRect, noteRef }: FloatingToolbarPro
     [note.id, updateNote]
   );
 
+  const handleDuplicate = useCallback(() => {
+    duplicateNote(note);
+    setOpenPanel(null);
+  }, [note, duplicateNote]);
+
   const handleDelete = useCallback(() => {
     deleteNote(note.id);
     setOpenPanel(null);
@@ -84,17 +119,26 @@ export function FloatingToolbar({ note, boardRect, noteRef }: FloatingToolbarPro
     [note.id, bringForward, bringToFront, sendBackward, sendToBack]
   );
 
-  // Position: above the note, horizontally centered
   if (!boardRect) return null;
 
-  const toolbarTop = note.y - 52;
-  const toolbarLeft = note.x + note.width / 2;
+  const TOOLBAR_H = 48;
+  const TOOLBAR_HALF_W = 200;
+  const MARGIN = 8;
+  const boardWidth = boardRect.width;
+
+  const showAbove = note.y >= TOOLBAR_H + MARGIN;
+  const toolbarTop = showAbove
+    ? note.y - TOOLBAR_H - MARGIN
+    : note.y + note.height + MARGIN;
+  const rawLeft = note.x + note.width / 2;
+  const toolbarLeft = Math.max(TOOLBAR_HALF_W, Math.min(rawLeft, boardWidth - TOOLBAR_HALF_W));
 
   return (
     <div
+      ref={wrapperRef}
       className={styles.wrapper}
       style={{ top: toolbarTop, left: toolbarLeft, transform: 'translateX(-50%)' }}
-      onMouseDown={(e) => e.stopPropagation()}
+      onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
     >
       {/* Main toolbar row */}
       <div className={styles.toolbar}>
@@ -111,7 +155,7 @@ export function FloatingToolbar({ note, boardRect, noteRef }: FloatingToolbarPro
           onClick={() => togglePanel('size')}
           title="Change size"
         >
-          {note.size}
+          {note.size ?? '⤢'}
         </button>
         <div className={styles.divider} />
         <button
@@ -141,6 +185,14 @@ export function FloatingToolbar({ note, boardRect, noteRef }: FloatingToolbarPro
         </button>
         <div className={styles.divider} />
         <button
+          className={styles.btn}
+          onClick={handleDuplicate}
+          title="Duplicate note"
+        >
+          Duplicate
+        </button>
+        <div className={styles.divider} />
+        <button
           className={`${styles.btn} ${styles.danger}`}
           onClick={handleDelete}
           title="Delete note"
@@ -155,8 +207,8 @@ export function FloatingToolbar({ note, boardRect, noteRef }: FloatingToolbarPro
           {FORMAT_ACTIONS.map(({ cmd, label, title }) => (
             <button
               key={cmd}
-              className={styles.formatBtn}
-              onClick={() => handleFormat(cmd)}
+              className={`${styles.formatBtn} ${activeFormats.has(cmd) ? styles.active : ''}`}
+              onMouseDown={(e) => handleFormat(e, cmd)}
               title={title}
             >
               {label}
