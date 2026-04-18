@@ -1,0 +1,175 @@
+@use '@/styles/variables';
+
+.wrapper {
+  position: absolute;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: all;
+  user-select: none;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-light);
+  border-radius: 10px;
+  padding: 4px 6px;
+  box-shadow: var(--shadow-card);
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 7px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+  white-space: nowrap;
+  border: none;
+  background: none;
+
+  &:hover {
+    background: var(--color-gray-100);
+    color: var(--color-text-primary);
+  }
+
+  &.active {
+    background: var(--color-primary);
+    color: #fff;
+  }
+
+  &.danger {
+    color: var(--color-danger);
+
+    &:hover {
+      background: var(--color-danger-light);
+      color: var(--color-danger-dark);
+    }
+  }
+}
+
+.divider {
+  width: 1px;
+  height: 20px;
+  background: var(--color-border-light);
+  margin: 0 2px;
+  flex-shrink: 0;
+}
+
+// Secondary options bar
+.secondary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border-light);
+  border-radius: 10px;
+  padding: 6px 10px;
+  box-shadow: var(--shadow-soft);
+}
+
+// Format buttons
+.formatBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+  border: none;
+  background: none;
+
+  &:hover {
+    background: var(--color-gray-100);
+    color: var(--color-text-primary);
+  }
+
+  &.active {
+    background: var(--color-primary-light);
+    color: var(--color-primary-dark);
+  }
+}
+
+// Size buttons
+.sizeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+  border: 1.5px solid var(--color-border-light);
+  background: none;
+
+  &:hover {
+    background: var(--color-gray-100);
+    border-color: var(--color-border-medium);
+  }
+
+  &.active {
+    background: var(--color-primary);
+    border-color: var(--color-primary-dark);
+    color: #fff;
+  }
+}
+
+// Color swatches
+.colorSwatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2.5px solid transparent;
+  cursor: pointer;
+  transition: transform 0.1s, border-color 0.1s;
+  outline: none;
+
+  &:hover {
+    transform: scale(1.15);
+  }
+
+  &.active {
+    border-color: var(--color-text-primary);
+    transform: scale(1.1);
+  }
+}
+
+// Arrange buttons
+.arrangeBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+  border: none;
+  background: none;
+  white-space: nowrap;
+
+  &:hover {
+    background: var(--color-gray-100);
+    color: var(--color-text-primary);
+  }
+}

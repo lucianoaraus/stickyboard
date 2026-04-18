@@ -1,0 +1,13 @@
+@use 'variables';
+@use 'reset';
+
+body {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+}
+
+#__next,
+html,
+body {
+  height: 100%;
+}

@@ -1,0 +1,126 @@
+@use '@/styles/variables';
+
+.note {
+  position: absolute;
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  cursor: default;
+  user-select: none;
+  transition: box-shadow 0.15s;
+  min-width: 100px;
+  min-height: 100px;
+
+  &.selected {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18), 0 0 0 2px rgba(46, 196, 199, 0.5);
+  }
+
+  &.dragging {
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    opacity: 0.92;
+  }
+}
+
+// Color variants
+.yellow { background: #fef08a; }
+.teal   { background: #99f6e4; }
+.purple { background: #e9d5ff; }
+.pink   { background: #fecdd3; }
+
+// Drag handle area (top portion)
+.dragHandle {
+  padding: 10px 10px 0;
+  cursor: grab;
+  flex-shrink: 0;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.handleDots {
+  display: flex;
+  gap: 3px;
+  opacity: 0.4;
+
+  span {
+    display: block;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+}
+
+// Content area
+.content {
+  flex: 1;
+  padding: 4px 12px 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.editor {
+  width: 100%;
+  height: 100%;
+  outline: none;
+  border: none;
+  background: transparent;
+  resize: none;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: rgba(0, 0, 0, 0.75);
+  word-break: break-word;
+  overflow: auto;
+
+  &:empty::before {
+    content: attr(data-placeholder);
+    color: rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+  }
+
+  ul, ol {
+    padding-left: 1.25em;
+  }
+
+  b, strong { font-weight: 700; }
+  i, em { font-style: italic; }
+  u { text-decoration: underline; }
+  s { text-decoration: line-through; }
+}
+
+// Resize handles
+.resizeHandle {
+  position: absolute;
+  z-index: 10;
+
+  &.corner {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+  }
+
+  &.edge {
+    border-radius: 2px;
+  }
+
+  &.nw { top: -4px; left: -4px; cursor: nw-resize; }
+  &.ne { top: -4px; right: -4px; cursor: ne-resize; }
+  &.sw { bottom: -4px; left: -4px; cursor: sw-resize; }
+  &.se { bottom: -4px; right: -4px; cursor: se-resize; }
+
+  &.n  { top: -4px; left: 50%; transform: translateX(-50%); width: 40px; height: 8px; cursor: n-resize; }
+  &.s  { bottom: -4px; left: 50%; transform: translateX(-50%); width: 40px; height: 8px; cursor: s-resize; }
+  &.w  { left: -4px; top: 50%; transform: translateY(-50%); width: 8px; height: 40px; cursor: w-resize; }
+  &.e  { right: -4px; top: 50%; transform: translateY(-50%); width: 8px; height: 40px; cursor: e-resize; }
+
+  &:hover, &:active {
+    background: rgba(46, 196, 199, 0.5) !important;
+  }
+}

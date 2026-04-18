@@ -1,0 +1,54 @@
+@use '@/styles/variables';
+
+.trash {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 1000;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: var(--color-bg-secondary);
+  border: 2px solid var(--color-border-light);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
+  pointer-events: none;
+
+  &.active {
+    background: var(--color-danger-light);
+    border-color: var(--color-danger);
+    color: var(--color-danger-dark);
+
+    .icon {
+      animation: shake 0.4s ease-in-out;
+    }
+  }
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s;
+}
+
+.lid {
+  transform-origin: center bottom;
+  transition: transform 0.2s ease;
+
+  .active & {
+    transform: rotate(-25deg) translateY(-3px);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  20% { transform: translateX(-3px) rotate(-4deg); }
+  40% { transform: translateX(3px) rotate(4deg); }
+  60% { transform: translateX(-2px) rotate(-2deg); }
+  80% { transform: translateX(2px) rotate(2deg); }
+}
