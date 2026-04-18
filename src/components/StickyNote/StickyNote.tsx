@@ -19,6 +19,11 @@ const RESIZE_HANDLES: { handle: ResizeHandle; className: string; isCorner: boole
   { handle: 'e', className: styles.e, isCorner: false },
 ];
 
+const MAX_FONT = 24;
+const MIN_FONT = 10;
+const DRAG_THRESHOLD = 5;
+const MAX_CHARS = 365;
+
 function isOverTrashZone(noteEl: HTMLElement): boolean {
   const trash = document.querySelector<HTMLElement>('[data-trash-zone]');
   if (!trash) return false;
@@ -48,7 +53,28 @@ export function StickyNote({
   const noteRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLDivElement>(null);
   const overTrashRef = useRef(false);
+  const fontSizeRef = useRef(MAX_FONT);
 
+  // ── Font size auto-scaling ──────────────────────────────────────────────────
+  const recalcFontSize = useCallback(() => {
+    const el = editorRef.current;
+    if (!el) return;
+    const container = el.parentElement; // .content div
+    if (!container) return;
+
+    const available = container.clientHeight;
+    let size = MAX_FONT;
+    el.style.fontSize = `${size}px`;
+
+    while (size > MIN_FONT && el.scrollHeight > available) {
+      size -= 1;
+      el.style.fontSize = `${size}px`;
+    }
+
+    fontSizeRef.current = size;
+  }, []);
+
+  // ── Drag ───────────────────────────────────────────────────────────────────
   const getDragConstraints = useCallback((): DragConstraints => {
     const board = boardRef.current;
     if (!board) return { minX: 0, minY: 0, maxX: 0, maxY: 0 };
@@ -59,15 +85,6 @@ export function StickyNote({
       maxY: board.offsetHeight - note.height,
     };
   }, [boardRef, note.width, note.height]);
-
-  const getResizeConstraints = useCallback((): ResizeConstraints => {
-    const board = boardRef.current;
-    return {
-      boardWidth: board?.offsetWidth ?? 1400,
-      boardHeight: board?.offsetHeight ?? 900,
-      minSize: 100,
-    };
-  }, [boardRef]);
 
   const handleDragStart = useCallback(() => {
     bringToFront(note.id);
@@ -93,7 +110,6 @@ export function StickyNote({
       const nowOver = noteRef.current ? isOverTrashZone(noteRef.current) : false;
       onTrashHover(false);
       overTrashRef.current = false;
-
       if (nowOver) {
         onDropOnTrash(note.id);
         return;
@@ -103,12 +119,23 @@ export function StickyNote({
     [note.id, updateNote, onTrashHover, onDropOnTrash]
   );
 
-  const { startDrag, isDragging } = useDrag({
+  const { startDrag } = useDrag({
     onDragStart: handleDragStart,
     onDrag: handleDrag,
     onDragEnd: handleDragEnd,
     getConstraints: getDragConstraints,
   });
+
+  // ── Resize ─────────────────────────────────────────────────────────────────
+  const getResizeConstraints = useCallback((): ResizeConstraints => {
+    const board = boardRef.current;
+    return {
+      boardWidth: board?.offsetWidth ?? 1400,
+      boardHeight: board?.offsetHeight ?? 900,
+      minSize: 160,
+      maxSize: 300,
+    };
+  }, [boardRef]);
 
   const handleResize = useCallback(
     (rect: { x: number; y: number; width: number; height: number }) => {
@@ -124,9 +151,10 @@ export function StickyNote({
 
   const handleResizeEnd = useCallback(
     (rect: { x: number; y: number; width: number; height: number }) => {
-      updateNote(note.id, rect);
+      updateNote(note.id, { ...rect, size: null });
+      setTimeout(recalcFontSize, 0);
     },
-    [note.id, updateNote]
+    [note.id, updateNote, recalcFontSize]
   );
 
   const { startResize } = useResize({
@@ -135,10 +163,42 @@ export function StickyNote({
     getConstraints: getResizeConstraints,
   });
 
+  // ── Interaction handlers ───────────────────────────────────────────────────
   const handleNoteMouseDown = useCallback(
     (e: React.MouseEvent) => {
       onSelect(note.id);
-      startDrag(e, note.x, note.y);
+
+      const startMouseX = e.clientX;
+      const startMouseY = e.clientY;
+      const noteStartX = note.x;
+      const noteStartY = note.y;
+
+      const handleUp = () => {
+        document.removeEventListener('mousemove', handleMove);
+        document.removeEventListener('mouseup', handleUp);
+      };
+
+      const handleMove = (moveEvent: MouseEvent) => {
+        const dx = Math.abs(moveEvent.clientX - startMouseX);
+        const dy = Math.abs(moveEvent.clientY - startMouseY);
+        if (dx <= DRAG_THRESHOLD && dy <= DRAG_THRESHOLD) return;
+        handleUp();
+        moveEvent.preventDefault();
+        editorRef.current?.blur();
+        startDrag(
+          {
+            clientX: moveEvent.clientX,
+            clientY: moveEvent.clientY,
+            preventDefault() {},
+            stopPropagation() {},
+          } as unknown as React.MouseEvent,
+          noteStartX,
+          noteStartY
+        );
+      };
+
+      document.addEventListener('mousemove', handleMove);
+      document.addEventListener('mouseup', handleUp);
     },
     [note.id, note.x, note.y, onSelect, startDrag]
   );
@@ -146,6 +206,7 @@ export function StickyNote({
   const handleResizeMouseDown = useCallback(
     (e: React.MouseEvent, handle: ResizeHandle) => {
       e.stopPropagation();
+      onSelect(note.id);
       startResize(e, handle, {
         x: note.x,
         y: note.y,
@@ -153,7 +214,7 @@ export function StickyNote({
         height: note.height,
       });
     },
-    [note, startResize]
+    [note, onSelect, startResize]
   );
 
   const handleBlur = useCallback(() => {
@@ -162,26 +223,66 @@ export function StickyNote({
     }
   }, [note.id, updateNote]);
 
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    const el = editorRef.current;
+    if (!el) return;
+    if ((el.textContent?.length ?? 0) >= MAX_CHARS) {
+      const isAllowed =
+        e.key === 'Backspace' || e.key === 'Delete' ||
+        e.key.startsWith('Arrow') || e.ctrlKey || e.metaKey;
+      if (!isAllowed) e.preventDefault();
+    }
+  }, []);
+
+  const handlePaste = useCallback(
+    (e: React.ClipboardEvent) => {
+      e.preventDefault();
+      const plain = e.clipboardData.getData('text/plain');
+      const el = editorRef.current;
+      if (!el || !plain) return;
+      const remaining = MAX_CHARS - (el.textContent?.length ?? 0);
+      if (remaining <= 0) return;
+      const text = plain.slice(0, remaining);
+      const sel = window.getSelection();
+      if (!sel?.rangeCount) return;
+      const range = sel.getRangeAt(0);
+      range.deleteContents();
+      const node = document.createTextNode(text);
+      range.insertNode(node);
+      range.setStartAfter(node);
+      range.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(range);
+      recalcFontSize();
+    },
+    [recalcFontSize]
+  );
+
+  // ── Sync content from state & recalc font ──────────────────────────────────
   useEffect(() => {
     const el = editorRef.current;
     if (!el) return;
     if (document.activeElement !== el) {
       el.innerHTML = note.content;
+      recalcFontSize();
     }
-  }, [note.content]);
+  }, [note.content, recalcFontSize]);
+
+  useEffect(() => {
+    recalcFontSize();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const boardRect = boardRef.current?.getBoundingClientRect() ?? null;
 
   return (
     <>
       {isSelected && (
-        <FloatingToolbar note={note} boardRect={boardRect} noteRef={noteRef} />
+        <FloatingToolbar note={note} boardRect={boardRect} />
       )}
       <div
         ref={noteRef}
-        className={`${styles.note} ${styles[note.color]} ${isSelected ? styles.selected : ''} ${
-          isDragging.current ? styles.dragging : ''
-        }`}
+        className={`${styles.note} ${styles[note.color]} ${isSelected ? styles.selected : ''}`}
         style={{
           left: note.x,
           top: note.y,
@@ -192,21 +293,16 @@ export function StickyNote({
         onMouseDown={handleNoteMouseDown}
         data-note-id={note.id}
       >
-        <div className={styles.dragHandle}>
-          <span className={styles.handleDots}>
-            <span /><span /><span />
-          </span>
-        </div>
-
         <div className={styles.content}>
           <div
             ref={editorRef}
             className={styles.editor}
             contentEditable
             suppressContentEditableWarning
-            data-placeholder="Write something..."
+            onInput={recalcFontSize}
+            onKeyDown={handleKeyDown}
+            onPaste={handlePaste}
             onBlur={handleBlur}
-            onMouseDown={(e) => e.stopPropagation()}
           />
         </div>
 

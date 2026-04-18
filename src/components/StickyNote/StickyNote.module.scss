@@ -9,16 +9,11 @@
   cursor: default;
   user-select: none;
   transition: box-shadow 0.15s;
-  min-width: 100px;
-  min-height: 100px;
+  min-width: 160px;
+  min-height: 160px;
 
   &.selected {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18), 0 0 0 2px rgba(46, 196, 199, 0.5);
-  }
-
-  &.dragging {
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-    opacity: 0.92;
   }
 }
 
@@ -28,65 +23,37 @@
 .purple { background: #e9d5ff; }
 .pink   { background: #fecdd3; }
 
-// Drag handle area (top portion)
-.dragHandle {
-  padding: 10px 10px 0;
-  cursor: grab;
-  flex-shrink: 0;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 4px;
-
-  &:active {
-    cursor: grabbing;
-  }
-}
-
-.handleDots {
-  display: flex;
-  gap: 3px;
-  opacity: 0.4;
-
-  span {
-    display: block;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: currentColor;
-  }
-}
-
-// Content area
+// Content area — flex-centers the editor vertically & horizontally
 .content {
   flex: 1;
-  padding: 4px 12px 12px;
   overflow: hidden;
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
 }
 
 .editor {
   width: 100%;
-  height: 100%;
+  padding: 12px;
+  box-sizing: border-box;
   outline: none;
-  border: none;
   background: transparent;
-  resize: none;
-  font-size: 0.875rem;
-  line-height: 1.6;
+  font-size: 24px; // controlled dynamically by JS
+  line-height: 1.4;
   color: rgba(0, 0, 0, 0.75);
   word-break: break-word;
-  overflow: auto;
+  text-align: center;
+  cursor: text;
 
-  &:empty::before {
-    content: attr(data-placeholder);
-    color: rgba(0, 0, 0, 0.3);
-    pointer-events: none;
+  ul {
+    list-style-type: disc;
+    padding-left: 1.4em;
   }
 
-  ul, ol {
-    padding-left: 1.25em;
+  ol {
+    list-style-type: decimal;
+    padding-left: 1.4em;
   }
 
   b, strong { font-weight: 700; }
