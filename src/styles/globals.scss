@@ -11,3 +11,12 @@ html,
 body {
   height: 100%;
 }
+
+// Prevent zoom on input focus on iOS
+@media (max-width: 767px) {
+  input,
+  textarea,
+  [contenteditable] {
+    font-size: max(16px, 1em);
+  }
+}
