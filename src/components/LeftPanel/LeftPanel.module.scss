@@ -1,4 +1,5 @@
 @use '@/styles/variables';
+@use '@/styles/breakpoints' as bp;
 
 .panel {
   display: flex;
@@ -11,6 +12,19 @@
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
   flex-shrink: 0;
   align-self: center;
+
+  @include bp.mobile {
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: row;
+    padding: 8px 12px;
+    border-radius: 14px;
+    z-index: 1000;
+    gap: 4px;
+    align-self: auto;
+  }
 }
 
 .tool {
@@ -32,6 +46,12 @@
     background: var(--color-primary);
     color: #fff;
   }
+
+  @include bp.mobile {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+  }
 }
 
 .divider {
@@ -39,4 +59,10 @@
   height: 1px;
   background: rgba(255, 255, 255, 0.12);
   margin: 2px 0;
+
+  @include bp.mobile {
+    width: 1px;
+    height: 24px;
+    margin: 0 2px;
+  }
 }

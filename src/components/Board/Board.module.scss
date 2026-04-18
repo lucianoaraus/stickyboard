@@ -1,13 +1,27 @@
 @use '@/styles/variables';
+@use '@/styles/breakpoints' as bp;
 
 .page {
   height: 100vh;
+  height: 100dvh;
   display: flex;
   align-items: flex-start;
   justify-content: center;
   gap: 12px;
   background: var(--color-bg-primary);
   padding: 68px 12px 12px;
+
+  @include bp.mobile {
+    padding: 64px 8px 88px;
+    gap: 0;
+    align-items: flex-start;
+    overflow: auto;
+  }
+
+  @include bp.tablet-only {
+    padding: 68px 12px 12px;
+    gap: 8px;
+  }
 }
 
 .board {
@@ -25,6 +39,36 @@
   &.createMode {
     cursor: crosshair;
   }
+
+  @include bp.mobile {
+    // Visible viewport into the board canvas
+    width: calc(100vw - 16px);
+    height: calc(100vh - 160px);
+    height: calc(100dvh - 160px);
+    border-radius: 12px;
+    flex-shrink: 0;
+    // Allow scrolling to reach notes outside the visible area
+    overflow: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+
+    // Phantom canvas that guarantees a scrollable area matching desktop dimensions
+    &::after {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 900px;
+      height: 700px;
+      pointer-events: none;
+    }
+  }
+
+  @include bp.tablet-only {
+    width: clamp(400px, calc(100vw - 76px), 1400px);
+    height: clamp(400px, calc(100vh - 80px), 900px);
+  }
 }
 
 .emptyHint {
@@ -39,6 +83,10 @@
   p {
     font-size: 0.875rem;
     margin-top: 8px;
+
+    @include bp.mobile {
+      font-size: 0.8rem;
+    }
   }
 }
 
