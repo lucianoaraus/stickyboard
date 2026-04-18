@@ -36,11 +36,11 @@ export const notesApi = {
     return newNote;
   },
 
-  async updateNote(id: string, changes: Partial<Note>): Promise<Note> {
+  async updateNote(id: string, changes: Partial<Note>): Promise<Note | null> {
     await delay();
     const notes = readStorage();
     const index = notes.findIndex((n) => n.id === id);
-    if (index === -1) throw new Error(`Note ${id} not found`);
+    if (index === -1) return null;
     const updated: Note = { ...notes[index], ...changes, id };
     notes[index] = updated;
     writeStorage(notes);
