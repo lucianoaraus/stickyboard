@@ -1,20 +1,24 @@
-# StickyBoard
+<p align="center">
+  <img src="src/assets/logo.svg" alt="StickyBoard logo" width="220" />
+</p>
+
+# 📌 StickyBoard
 
 A single-page sticky notes board built with Next.js (App Router), TypeScript, and SASS Modules.
 
-## Features
+## ✨ Features
 
-- Click anywhere on the board to create a new sticky note
-- Drag notes freely across the board
-- Resize notes by dragging any edge or corner (8 handles)
-- Rich text formatting: bold, italic, underline, strikethrough, lists
-- 4 note colors: yellow, teal, purple, pink
-- 3 note sizes: S (160px), M (220px), L (300px)
-- Layer control: Bring to Front, Bring Forward, Send Backward, Send to Back
-- Drag notes onto the trash icon to delete them
-- All notes persisted in `localStorage`
+- 🖱️ Click anywhere on the board to create a new sticky note
+- 🤚 Drag notes freely across the board
+- 📐 Resize notes by dragging any edge or corner (8 handles)
+- ✍️ Rich text formatting: bold, italic, underline, strikethrough, lists
+- 🎨 4 note colors: yellow, teal, purple, pink
+- 📏 3 note sizes: S (160px), M (220px), L (300px)
+- 🗂️ Layer control: Bring to Front, Bring Forward, Send Backward, Send to Back
+- 🗑️ Drag notes onto the trash icon to delete them
+- 💾 All notes persisted in `localStorage`
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 - **Next.js 16** (App Router)
 - **TypeScript** (strict mode)
@@ -23,7 +27,7 @@ A single-page sticky notes board built with Next.js (App Router), TypeScript, an
 - Custom hooks: `useDrag`, `useResize`, `useNotes`
 - Mock REST API with simulated network latency
 
-## Getting Started
+## 🚀 Getting Started
 
 ```bash
 npm install
@@ -32,18 +36,18 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## Docker
+## 🐳 Docker
 
 ```bash
-docker-compose up
+docker compose up -d --build
 ```
 
-## Project Structure
+Open [http://localhost:3000](http://localhost:3000).
+
+## 📁 Project Structure
 
 ```
 src/
-  agents/        # Placeholder for future AI agent modules
-  skills/        # Placeholder for future AI skill modules
   api/           # Mock REST API (notesApi.ts)
   components/    # Board, Header, StickyNote, FloatingToolbar, TrashZone
   context/       # NotesContext (React Context)
@@ -54,7 +58,11 @@ src/
 docs/            # Architecture and component documentation
 ```
 
-## Docs
+## 📖 Docs
 
 - [Architecture](docs/architecture.md)
 - [Components](docs/components.md)
+
+## 👤 Author
+
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=22&color=c4b5fd&lines=Luciano+Araus" alt="Luciano Araus" />
