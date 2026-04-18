@@ -20,10 +20,17 @@ export function Board() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!e.ctrlKey && !e.metaKey) return;
       const target = e.target as HTMLElement;
       const isEditing = target.isContentEditable || target.tagName === 'INPUT' || target.tagName === 'TEXTAREA';
       if (isEditing) return;
+
+      if (e.key === 'Delete' && selectedId) {
+        deleteNote(selectedId);
+        setSelectedId(null);
+        return;
+      }
+
+      if (!e.ctrlKey && !e.metaKey) return;
 
       if (e.key === 'c' && selectedId) {
         const note = notes.find((n) => n.id === selectedId);
@@ -38,7 +45,7 @@ export function Board() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedId, notes, copyNote, clipboardNote, duplicateNote]);
+  }, [selectedId, notes, deleteNote, copyNote, clipboardNote, duplicateNote]);
 
   const handleBoardClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
