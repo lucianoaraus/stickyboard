@@ -1,4 +1,5 @@
 @use '@/styles/variables';
+@use '@/styles/breakpoints' as bp;
 
 .wrapper {
   position: absolute;
@@ -9,6 +10,11 @@
   gap: 6px;
   pointer-events: all;
   user-select: none;
+
+  @include bp.mobile {
+    gap: 4px;
+    max-width: calc(100vw - 24px);
+  }
 }
 
 .toolbar {
@@ -20,6 +26,19 @@
   border-radius: 10px;
   padding: 4px 6px;
   box-shadow: var(--shadow-card);
+
+  @include bp.mobile {
+    gap: 1px;
+    padding: 3px 4px;
+    overflow-x: auto;
+    max-width: 100%;
+    border-radius: 9px;
+    // Hide scrollbar visually but keep scrollable
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 }
 
 .btn {
@@ -56,6 +75,13 @@
       color: var(--color-danger-dark);
     }
   }
+
+  @include bp.mobile {
+    padding: 4px 7px;
+    font-size: 0.72rem;
+    gap: 3px;
+    border-radius: 6px;
+  }
 }
 
 .divider {
@@ -76,6 +102,19 @@
   border-radius: 10px;
   padding: 6px 10px;
   box-shadow: var(--shadow-soft);
+
+  @include bp.mobile {
+    gap: 4px;
+    padding: 5px 8px;
+    overflow-x: auto;
+    max-width: 100%;
+    flex-wrap: nowrap;
+    border-radius: 9px;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 }
 
 // Format buttons
@@ -102,6 +141,12 @@
   &.active {
     background: var(--color-primary-light);
     color: var(--color-primary-dark);
+  }
+
+  @include bp.mobile {
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
   }
 }
 
@@ -130,6 +175,11 @@
     border-color: var(--color-primary-dark);
     color: #fff;
   }
+
+  @include bp.mobile {
+    padding: 4px 10px;
+    flex-shrink: 0;
+  }
 }
 
 // Color swatches
@@ -141,6 +191,7 @@
   cursor: pointer;
   transition: transform 0.1s, border-color 0.1s;
   outline: none;
+  flex-shrink: 0;
 
   &:hover {
     transform: scale(1.15);
@@ -171,5 +222,11 @@
   &:hover {
     background: var(--color-gray-100);
     color: var(--color-text-primary);
+  }
+
+  @include bp.mobile {
+    padding: 4px 8px;
+    font-size: 0.72rem;
+    flex-shrink: 0;
   }
 }
