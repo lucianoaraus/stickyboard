@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Note } from '@/types';
 import { useNotesContext } from '@/context/NotesContext';
 import { useDrag, DragConstraints } from '@/hooks/useDrag';
@@ -55,6 +55,7 @@ export function StickyNote({
   const overTrashRef = useRef(false);
   const fontSizeRef = useRef(MAX_FONT);
   const isEditorFocused = useRef(false);
+  const [livePos, setLivePos] = useState<{ x: number; y: number } | null>(null);
 
   // ── Font size auto-scaling ──────────────────────────────────────────────────
   const recalcFontSize = useCallback(() => {
@@ -97,6 +98,7 @@ export function StickyNote({
         noteRef.current.style.left = `${x}px`;
         noteRef.current.style.top = `${y}px`;
       }
+      setLivePos({ x, y });
       const nowOver = noteRef.current ? isOverTrashZone(noteRef.current) : false;
       if (nowOver !== overTrashRef.current) {
         overTrashRef.current = nowOver;
@@ -111,6 +113,7 @@ export function StickyNote({
       const nowOver = noteRef.current ? isOverTrashZone(noteRef.current) : false;
       onTrashHover(false);
       overTrashRef.current = false;
+      setLivePos(null);
       if (nowOver) {
         onDropOnTrash(note.id);
         return;
@@ -282,11 +285,12 @@ export function StickyNote({
   }, []);
 
   const boardRect = boardRef.current?.getBoundingClientRect() ?? null;
+  const liveNote = livePos ? { ...note, x: livePos.x, y: livePos.y } : note;
 
   return (
     <>
       {isSelected && (
-        <FloatingToolbar note={note} boardRect={boardRect} />
+        <FloatingToolbar note={liveNote} boardRect={boardRect} />
       )}
       <div
         ref={noteRef}
