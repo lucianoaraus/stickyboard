@@ -8,6 +8,7 @@ export interface ResizeConstraints {
   boardWidth: number;
   boardHeight: number;
   minSize: number;
+  maxSize: number;
 }
 
 interface NoteRect {
@@ -54,30 +55,31 @@ export function useResize({
       startMouse: { x: number; y: number },
       constraints: ResizeConstraints
     ): NoteRect => {
-      const { boardWidth, boardHeight, minSize } = constraints;
+      const { boardWidth, boardHeight, minSize, maxSize } = constraints;
       const dx = mouseX - startMouse.x;
       const dy = mouseY - startMouse.y;
 
       let { x, y, width, height } = startRect;
 
       if (handle.includes('e')) {
-        width = Math.max(minSize, startRect.width + dx);
+        width = clamp(startRect.width + dx, minSize, maxSize);
         width = Math.min(width, boardWidth - x);
       }
       if (handle.includes('s')) {
-        height = Math.max(minSize, startRect.height + dy);
+        height = clamp(startRect.height + dy, minSize, maxSize);
         height = Math.min(height, boardHeight - y);
       }
       if (handle.includes('w')) {
-        const newWidth = Math.max(minSize, startRect.width - dx);
+        // maxDx: how far right before minSize; minDx: how far left before maxSize
         const maxDx = startRect.width - minSize;
-        x = clamp(startRect.x + dx, 0, startRect.x + maxDx);
+        const minDx = startRect.width - maxSize;
+        x = clamp(startRect.x + dx, Math.max(0, startRect.x + minDx), startRect.x + maxDx);
         width = startRect.x + startRect.width - x;
       }
       if (handle.includes('n')) {
-        const newHeight = Math.max(minSize, startRect.height - dy);
         const maxDy = startRect.height - minSize;
-        y = clamp(startRect.y + dy, 0, startRect.y + maxDy);
+        const minDy = startRect.height - maxSize;
+        y = clamp(startRect.y + dy, Math.max(0, startRect.y + minDy), startRect.y + maxDy);
         height = startRect.y + startRect.height - y;
       }
 
